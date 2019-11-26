@@ -1,10 +1,10 @@
-微信图书商城实战课程
+出租车公司约车项目
 ==================
 
 ###总体架构
-* 域名 book.imooc.test
-* 管理后台地址  book.imooc.test/web
-* 会员端地址 book.imooc.test/m
+* 域名 xxx
+* 管理后台地址  xxx/web
+* 会员端地址 xxx/m
 
 
 ### 文件架构解释
