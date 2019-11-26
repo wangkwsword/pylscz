@@ -1,0 +1,12 @@
+.idea
+.DS_Store
+nohup.out
+composer.lock
+runtime
+/vendor
+web/assets
+config/db-local.php
+config/params-local.php
+web/uploads/avatar
+web/uploads/brand
+web/uploads/book
