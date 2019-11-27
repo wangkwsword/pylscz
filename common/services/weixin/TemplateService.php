@@ -36,32 +36,38 @@ class TemplateService extends  BaseService
             return false;
         }
 
-		$template_id = "bZ2eW05hftOxirpNqBa4xMpLV5rvOEgjppvc1sjsjL4";
+//		$template_id = "bZ2eW05hftOxirpNqBa4xMpLV5rvOEgjppvc1sjsjL4";
+//        改为预订
+        $template_id = "6WSfn7GE9HxaauQcJDlB-0GSwQcX3CLBzEE_9vEfzec";
         $pay_money = $pay_order_info["pay_price"];
 
         $data = [
             "first" => [
-                "value" => "您已成功预订出行服务",
+                "value" => $member_info['nickname']."您已成功预订出行服务",
                 "color" => "#173177"
             ],
-			"keyword1" =>[
-				"value" => $member_info['nickname'].$member_info['mobile'],
-				"color" => "#173177"
-			],
-            "keyword2" =>[
-                "value" => $book_info['name'],
+            "type" =>[
+                "value" => "出行服务公司",
                 "color" => "#173177"
             ],
-            "keyword3" =>[
-                "value" => $pay_order_item_info['quantity'],
+            "name" =>[
+                "value" => "山东交运平阴公司",
                 "color" => "#173177"
             ],
-            "keyword4" =>[
+            "productType" =>[
+                "value" => "出行服务",
+                "color" => "#173177"
+            ],
+            "serviceName" =>[
+                "value" => $pay_order_item_info['quantity']."人。".$book_info['name'],
+                "color" => "#173177"
+            ],
+            "time" =>[
                 "value" => $pay_order_info['chuxingtime'],
                 "color" => "#173177"
             ],
             "remark" => [
-                "value" => "如有疑问，欢迎拨打87883369",
+                "value" => "请核对您的电话：".$member_info['mobile']."如有疑问，欢迎拨打87883369。我们将尽快安排专员与您联系",
                 "color" => "#173177"
             ]
         ];
@@ -112,7 +118,7 @@ class TemplateService extends  BaseService
                 "color" => "#173177"
             ],
             "remark" => [
-                "value" => "如有疑问，欢迎拨打87883369",
+                "value" => "请尽快与出行人联系。",
                 "color" => "#173177"
             ]
         ];

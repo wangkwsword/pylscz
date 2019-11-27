@@ -20,7 +20,7 @@ StaticService::includeAppJsStatic( "/js/m/product/info.js",\app\assets\MAsset::c
 <div class="pro_header">
     <div class="pro_tips">
         <h2><?=UtilService::encode( $info['name'] );?></h2>
-        <h3><b>预付定金¥<?=UtilService::encode( $info['price'] );?></b>
+        <h3><b>票价¥<?=UtilService::encode( $info['price'] );?></b>
 <!--            <font>库存量：--><?//=$info['stock'];?><!--</font>-->
         </h3>
     </div>

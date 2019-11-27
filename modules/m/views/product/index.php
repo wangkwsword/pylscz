@@ -70,7 +70,7 @@ StaticService::includeAppJsStatic( "/js/m/product/index.js",\app\assets\MAsset::
                 <a href="<?=UrlService::buildMUrl("/product/info",[ 'id' => $_item['id'] ]);?>">
                     <i><img src="<?=$_item['main_image_url'];?>"  style="width: 100%;height: 200px;"/></i>
                     <span><?=$_item['name'];?></span>
-                    <b><label>月预订人数<?=$_item['month_count'];?></label>预付定金¥<?=$_item['price'];?></b>
+                    <b><label>月预订人数<?=$_item['month_count'];?></label>票价¥<?=$_item['price'];?></b>
                 </a>
             </li>
             <?php endforeach;?>

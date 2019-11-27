@@ -42,7 +42,7 @@ StaticService::includeAppJsStatic( "/js/m/product/order.js",\app\assets\MAsset::
 				<h2><?=$_item['name'];?> x <?=$_item['quantity'];?></h2>
 				<h4>&nbsp;</h4>
                 <b>日期：<?=$_item['chuxingtime'];?></b>
-				<b>单人定金：¥ <?=$_item['price'];?></b>
+				<b>单人票价：¥ <?=$_item['price'];?></b>
 			</a>
 		</li>
 		<?php endforeach;?>
