@@ -4,6 +4,7 @@ namespace app\modules\m\controllers;
 use app\common\services\ConstantMapService;
 use app\common\services\DataHelper;
 use app\common\services\PayOrderService;
+use app\common\services\QueueListService;
 use app\common\services\UrlService;
 use app\common\services\UtilService;
 use app\models\book\Book;
@@ -12,6 +13,7 @@ use app\models\member\MemberAddress;
 use app\models\member\MemberCart;
 use app\models\member\MemberFav;
 use app\modules\m\controllers\common\BaseController;
+use app\models\QueueList;
 
 class ProductController extends BaseController {
 	public function actionIndex(){
@@ -300,7 +302,8 @@ class ProductController extends BaseController {
 			'target_type' => $target_type,
 			'note' => '支付预付金额',
             'chuxingtime'=>$chuxingtime,
-			'status' => -8,
+			'status' => 1,
+//            'status' => -8,
 			'express_address_id' => $address_id
 		];
 
@@ -314,8 +317,14 @@ class ProductController extends BaseController {
 		if( $sc == "cart" ){//如果从购物车创建订单，需要清空购物车了
 			MemberCart::deleteAll([ 'member_id' => $this->current_user['id'] ]);
 		}
-
-		return $this->renderJSON([ 'url' => UrlService::buildMUrl("/pay/buy/?pay_order_id={$ret['id']}") ],'下单成功,前去支付~~' );
+//创建订单就成功，不用支付 begin
+        QueueListService::addQueue( "pay",[
+            'member_id' => $this->current_user['id'],
+            'pay_order_id' => $ret['id'],
+        ] );
+        return $this->renderJSON([ 'url' => UrlService::buildMUrl("/default/index") ],'下单成功,我们将安排专员与您联系' );
+//		return $this->renderJSON([ 'url' => UrlService::buildMUrl("/pay/buy/?pay_order_id={$ret['id']}") ],'下单成功,前去支付~~' );
+//创建订单就成功，不用支付 end
 	}
 
 	public function actionOps(){
