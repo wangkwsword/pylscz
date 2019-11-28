@@ -48,6 +48,10 @@ class ProductController extends BaseController {
 			'search_conditions' => $search_conditions
 		]);
 	}
+    public function actionBaoche(){
+        $this->layout = false;
+        return $this->render('baoche');
+    }
 
 	public function actionInfo(){
 		$id = intval( $this->get("id",0) );

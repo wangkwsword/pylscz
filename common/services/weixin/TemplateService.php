@@ -67,7 +67,7 @@ class TemplateService extends  BaseService
                 "color" => "#173177"
             ],
             "remark" => [
-                "value" => "请核对您的电话：".$member_info['mobile']."如有疑问，欢迎拨打87883369。我们将尽快安排专员与您联系",
+                "value" => "如有疑问，欢迎拨打87883369。请核对您的电话：".$member_info['mobile']."。我们将尽快安排专员与您联系",
                 "color" => "#173177"
             ]
         ];
