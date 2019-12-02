@@ -1,6 +1,8 @@
 <?php
 use \app\common\services\UrlService;
 use \app\common\services\StaticService;
+use app\common\services\UtilService;
+
 StaticService::includeAppJsStatic( "/js/m/product/index.js",\app\assets\MAsset::className() );
 ?>
 <div class="search_header">
@@ -69,8 +71,16 @@ StaticService::includeAppJsStatic( "/js/m/product/index.js",\app\assets\MAsset::
             <li>
                 <a href="<?=UrlService::buildMUrl("/product/info",[ 'id' => $_item['id'] ]);?>">
                     <i><img src="<?=$_item['main_image_url'];?>"  style="width: 100%;height: 200px;"/></i>
-                    <span><?=$_item['name'];?></span>
-                    <b><label>月预订人数<?=$_item['month_count'];?></label>票价¥<?=$_item['price'];?></b>
+
+                    <?php if( $_item['id']==99999 ):?>
+                        <span>团体包车业务</span>
+                    <?php else:?>
+                        <span><?=$_item['name'];?></span>
+                    <?php endif;?>
+
+<!--                    <b><label>月预订人数--><?//=$_item['month_count'];?><!--</label>-->
+<!--                        票价¥--><?//=$_item['price'];?>
+<!--                    </b>-->
                 </a>
             </li>
             <?php endforeach;?>

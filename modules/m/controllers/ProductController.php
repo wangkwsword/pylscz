@@ -7,8 +7,10 @@ use app\common\services\PayOrderService;
 use app\common\services\QueueListService;
 use app\common\services\UrlService;
 use app\common\services\UtilService;
+use app\models\book\Baoche;
 use app\models\book\Book;
 use app\models\City;
+use app\models\member\Member;
 use app\models\member\MemberAddress;
 use app\models\member\MemberCart;
 use app\models\member\MemberFav;
@@ -48,9 +50,63 @@ class ProductController extends BaseController {
 			'search_conditions' => $search_conditions
 		]);
 	}
+
+     public function rand($len)
+      {
+         $chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+          $string=time();
+         for(;$len>=1;$len--)
+         {
+           $position=rand()%strlen($chars);
+            $position2=rand()%strlen($string);
+            $string=substr_replace($string,substr($chars,$position,1),$position2,0);
+        }
+        return $string;
+    }
     public function actionBaoche(){
         $this->layout = false;
-        return $this->render('baoche');
+        if (\Yii::$app->request->isPost){
+               $nickname = trim( $this->post("nickname","") );
+                 $mobile = trim( $this->post("mobile","") );
+            $fromaddress = trim( $this->post("fromaddress","") );
+              $toaddress = trim( $this->post("toaddress","") );
+            $chengren = intval( $this->post("chengren","") );
+            $ertong = intval( $this->post("ertong","") );
+            $chuxingtime = trim( $this->post("chuxingtime","") );
+            $date_now  = date("Y-m-d H:i:s");
+            $baoche_id = time();
+
+
+            $baoche_info = new Baoche();
+
+            $baoche_info->nickname=$nickname;
+            $baoche_info->mobile=$mobile;
+            $baoche_info->fromaddress=$fromaddress;
+            $baoche_info->toaddress=$toaddress;
+            $baoche_info->chengren=$chengren;
+            $baoche_info->ertong=$ertong;
+            $baoche_info->chuxingtime=$chuxingtime;
+            $baoche_info->created_time = $date_now;
+            $baoche_info->baoche_id=$baoche_id;
+            $baoche_info->member_id=$this->current_user['id'];
+
+            $baoche_info->save(0);
+
+            QueueListService::addQueue( "baoche",[
+                'member_id' => $this->current_user['id'],
+                'baoche_id'=>$baoche_id
+            ] );
+            return $this->renderJSON([ 'url' => UrlService::buildMUrl("/default/index") ],'预约成功,我们将安排专员与您联系' );
+       }
+        $reback_url = UrlService::buildMUrl("/product/index");
+//        $user_info = Book::findOne([ 'id' => $id ]);
+        $user_info = Member::findOne(['id'=>$this->current_user]);
+        if(!$user_info){
+            return $this->redirect( $reback_url );
+        }
+
+
+        return $this->render('baoche',['user_info'=>$user_info]);
     }
 
 	public function actionInfo(){
@@ -191,6 +247,15 @@ class ProductController extends BaseController {
 		if( \Yii::$app->request->isGet ){
 		    $chuxingtime = $this->get('chuxingtime','2019-11-24 上午6:00');
 			$book_id = intval( $this->get("id",0) );
+			$fromaddress = '';
+            $toaddress = '';
+            if($book_id==99999){
+                $fromaddress = trim($this->get('fromaddress',''));
+                $toaddress = trim($this->get('toaddress',''));
+                $baoche_book = Book::find()->where([ 'id' => $book_id ])->one();
+                $baoche_book->name=$fromaddress.' 至 '.$toaddress;
+                $baoche_book->save(0);
+            }
 			$quantity = intval( $this->get("quantity",1) );
 			$sc = $this->get("sc","product");//sc source 来源
 			$product_list = [];
@@ -370,7 +435,10 @@ class ProductController extends BaseController {
 			$p = 1;
 		}
 
-		$query = Book::find()->where([ 'status' => 1 ]);
+		$query = Book::find()
+            ->where([ 'status' => 1 ])
+            ->andWhere(['<>','id',99999])
+        ;
 		if( $kw ){
 			$where_name = [ 'LIKE','name','%'.strtr($kw,['%'=>'\%', '_'=>'\_', '\\'=>'\\\\']).'%', false ];
 			$where_tags = [ 'LIKE','tags','%'.strtr($kw,['%'=>'\%', '_'=>'\_', '\\'=>'\\\\']).'%', false ];

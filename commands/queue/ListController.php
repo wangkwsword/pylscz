@@ -38,6 +38,9 @@ class ListController extends  BaseController {
 				case "express":
 					$this->handleExpress( $_item );
 					break;
+                case "baoche":
+                    $this->handleBaoche($_item);
+					break;
 			}
 
 			$_item->status = 1;
@@ -127,9 +130,27 @@ class ListController extends  BaseController {
 
 		TemplateService::payNotice( $data['pay_order_id'] );
 		TemplateService::payNoticeMaster($data['pay_order_id'] );
+		TemplateService::payNoticeMasterWu($data['pay_order_id']);
 		return true;
 	}
+    /**
+     * 包车相关通知
+     */
+    private function handleBaoche( $item ){
+        $data = @json_decode( $item['data'],true );
+        if( !isset( $data['member_id'] ) || !isset( $data['baoche_id']) ){
+            return false;
+        }
 
+
+        if( !$data['member_id'] || !$data['baoche_id'] ){
+            return false;
+        }
+
+        TemplateService::baocheNotice( $data['baoche_id'] );
+        TemplateService::baocheNoticeMaster($data['baoche_id'] );
+        return true;
+    }
 	/**
 	 * 确认发货通知
 	 */

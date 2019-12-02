@@ -56,12 +56,33 @@ var product_info_ops = {
         });
 
         $(".order_now_btn").click( function(){
+
+            if ($(this).attr("data")==99999){
+                var fromaddress = $('input[name="fromaddress"]').val();
+                var toaddress = $('input[name="toaddress"]').val();
+                var chuxingtime = $("#result").text();
+                if(chuxingtime == undefined||chuxingtime==""){
+                    alert("请选择出行时间~~");
+                    return;
+                }
+                if(fromaddress.length<2){
+                    alert("请输入出发地点");
+                    return;
+                }
+                if(toaddress.length<2){
+                    alert("请输入目的地~~");
+                    return;
+                }
+                window.location.href = common_ops.buildMUrl("/product/order",{ 'id':$(this).attr("data"),fromaddress:fromaddress,toaddress:toaddress,chuxingtime:chuxingtime,quantity:$("input[name=quantity]").val() } )
+
+
+            }else{
             var chuxingtime = $("#result").text();
             if(chuxingtime == undefined||chuxingtime==""){
                 alert("请选择出行时间~~");
                 return;
             }
-            window.location.href = common_ops.buildMUrl("/product/order",{ 'id':$(this).attr("data"),chuxingtime:chuxingtime,quantity:$("input[name=quantity]").val() } )
+            window.location.href = common_ops.buildMUrl("/product/order",{ 'id':$(this).attr("data"),chuxingtime:chuxingtime,quantity:$("input[name=quantity]").val() } )}
         });
 
         //加减效果 start

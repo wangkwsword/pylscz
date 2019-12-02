@@ -1,6 +1,8 @@
 <?php
 
 use app\common\services\UrlService;
+use app\common\services\UtilService;
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -34,7 +36,7 @@ use app\common\services\UrlService;
 
 		<div class="j_main m-main">
 
-			<form action="" method="post" name="form_1">
+			<form action="" method="post" name="form_1" id="baoche" class="row m-t  wrap_account_set">
 
 				<div class="tit">
 					<i></i>填写包车信息
@@ -56,11 +58,11 @@ use app\common\services\UrlService;
 					</dl>
 					<dl class="J_price">
 									<dt>成人</dt>
-									<dd class="box-flex-1 price pd0" id="adult_price_span"><span>￥ <span id="price_d">50</span></span></dd><dd class="box-flex-2"><span class="subadd j_num"><span class="sub" data-type="adults"></span><input id="j_price_d_num" type="number" min="1" max="99" class="text_num" value="1" name="adult_num"><span class="add" data-type="adults"></span></span></dd>
+									<dd class="box-flex-1 price pd0" id="adult_price_span"><span>￥ <span id="price_d">50</span></span></dd><dd class="box-flex-2"><span class="subadd j_num"><span class="sub" data-type="adults"></span><input id="j_price_d_num" type="number" min="1" max="99" class="text_num" value="1" name="chengren"><span class="add" data-type="adults"></span></span></dd>
 								</dl>
 								<dl class="J_price">
 									<dt>儿童</dt>
-									<dd class="box-flex-1 price pd0" id="adult_price_span"><span>￥ <span id="price_child_d">25</span></span></dd><dd class="box-flex-2"><span class="subadd j_num"><span class="sub" data-type="adults"></span><input id="j_price_child_d_num" type="number" min="0" max="99" class="text_num" value="0" name="child_num"><span class="add" data-type="adults"></span></span></dd>
+									<dd class="box-flex-1 price pd0" id="adult_price_span"><span>￥ <span id="price_child_d">25</span></span></dd><dd class="box-flex-2"><span class="subadd j_num"><span class="sub" data-type="adults"></span><input id="j_price_child_d_num" type="number" min="0" max="99" class="text_num" value="0" name="ertong"><span class="add" data-type="adults"></span></span></dd>
 								</dl>
 				</div>
 				<!-- <div class="tit">
@@ -78,12 +80,12 @@ use app\common\services\UrlService;
 				<div class="txt">
 					<dl>
 						<dt>联系人</dt>
-						<dd><input maxlength="20" type="text" name="truename" class="o_man" placeholder="" value="123"></dd>
+						<dd><input maxlength="20" type="text" name="truename" class="o_man" placeholder="" value="<?=UtilService::encode( $user_info['nickname'] );?>"></dd>
 					</dl>
 					<dl>
 						<dt>手机号码</dt>
 						<dd class="pd0"><input type="tel" name="mobiletel" id="n_mobiletel" class="o_number" maxlength="11" placeholder=""
-							 value=""></dd>
+							 value="<?=UtilService::encode( $user_info['mobile'] );?>"></dd>
 						<!-- <dd style="width:8rem;-webkit-box-flex:inherit">
 							<p>
 								<span class="mobile_code">获取验证码</span>
@@ -107,7 +109,7 @@ use app\common\services\UrlService;
 预计花费 <span>￥<em class="j_all_money">620</em></span>
 						</div>
 					</dt>
-					<dd class="sbmFix"><button type="button" id="save">提交预订</button></dd>
+					<dd class="sbmFix"><button type="button" id="save" class="btn btn-w-m btn-outline btn-primary save">提交预订</button></dd>
 				</dl>
 			</div>
 		</div>
@@ -197,40 +199,7 @@ use app\common\services\UrlService;
                     alert('请输入6位验证码');
                     return false;
                 }
-				$('#save').addClass('not');
-				$.ajax({
-					url: ajax_url,
-					type: 'post',
-					data: {
-                    mobiletel: mobiletel,
-						code: code,
-						inajax: 1
-					},
-					dataType: 'json',
-					success: function(data) { /*console.log(data);*/
-                    if (data == '1') {
-                        alert('手机验证完毕');
-                        document.form_1.submit();
-                    } else {
-                        $('#save').removeClass('not');
-                        if (data == '-1') {
-                            alert('手机号码错误');
-                            return false;
-                        } else if (data == '-2') {
-                            alert('验证码错误');
-                            return false;
-                        } else {
-                            alert('意外错误');
-                            return false;
-                        }
-                    }
-                },
-					error: function() {
-                    $('#save').removeClass('not');
-                    alert('意外错误');
-                    return false
-					}
-				});
+
 			}
 			$(function() { /*表单提交*/
                 $('#save').click(function(e) {
@@ -245,7 +214,10 @@ use app\common\services\UrlService;
 						fromaddress = $('input[name="fromaddress"]').val(),
 						toaddress = $('input[name="toaddress"]').val(),
 						chuxingtime = $('input[name="chuxingtime"]').val(),
-						mobiletel = $('input[name="mobiletel"]').val();
+						mobiletel = $('input[name="mobiletel"]').val(),
+                        chengren=$('input[name="chengren"]').val(),
+                        ertong=$('input[name="ertong"]').val();
+
 					if (true_name == '') {
                         alert('联系人为必须填写项');
                         return false;
@@ -281,59 +253,39 @@ use app\common\services\UrlService;
                         $('#save').addClass('not');
                         document.form_1.submit();
                     }
-				}); /*发送手机验证码*/
-                $(".mobile_code").click(function() {
-                    var th = $(this),
-						tel = $("#n_mobiletel").val(),
-						r_url = '/account/getcode?inajax=1&mobiletel=' + tel + '&idtype=4';
-					if (tel == '') {
-                        alert('请先输入手机号码');
-                        return false;
-                    }
-					if (tel.length != 11 || !mobiletel_regexp.test(tel)) {
-                        alert('手机号码不正确，请您重新输入');
-                        return false
-					}
-					if (th.hasClass('not')) {
-                        return false;
-                    }
-					th.addClass('not');
-					setTimeout(function() {
-                        th.removeClass('not');
-                    }, 60000);
-					$.get(r_url, function(data) {
-                        if (data == '1') {
-                            alert('短信已发送，请查看');
-                        } else if (data == '-1') {
-                            alert('获取失败，手机号码不能为空');
-                        } else if (data == '-2') {
-                            alert('获取失败，手机号码错误');
-                        } else if (data == '-3') {
-                            alert('获取失败，该手机已被注册');
-                        } else if (data == '-4') {
-                            alert('您的操作太频繁，请稍候再试');
-                        } else if (data == '-8') {
-                            alert('同一ip一天最多10条短信');
-                        } else if (data == '-5') {
-                            alert('同一手机一个月最多5条短信');
-                        } else if (data == '-6') {
-                            alert('获取失败，获取验证时间间隔60秒');
-                        } else {
-                            alert('获取失败');
+
+                    var data = {
+                        nickname:true_name,
+                        mobile:mobiletel,
+                        fromaddress:fromaddress,
+                        toaddress:toaddress,
+                        chengren:chengren,
+                        ertong:ertong,
+                        chuxingtime:chuxingtime,
+
+                    };
+
+                    $.ajax({
+                        url:common_ops.buildMUrl("/product/baoche") ,
+                        type:'POST',
+                        data:data,
+                        dataType:'json',
+                        success:function(res){
+                            alert( res.msg );
+                            if( res.code == 200 ){
+                                window.location.href = res.data.url;
+                            }
                         }
                     });
-				}); /*改变证件类型事件*/
-                $('#j_kehu_list').on('change', '.tourist_box .certificate_type', function() {
 
-                    placeholder = mark + '号码（必填）';
-                    cur.closest('dl').next('dl').find('dt').html(mark).siblings('dd').find('input[type="text"]').attr(
-                        'placeholder', placeholder);
-                });
+				}); /*发送手机验证码*/
+
             });
 
 			function guoqing_yh() {
 
             }
 		</script>
+<!--        <script src="--><?//=UrlService::buildWwwUrl( "/js/m/product/baoche.js")?><!--"></script>-->
 	</body>
 </html>

@@ -5,6 +5,7 @@ namespace app\common\services\weixin;
 use app\common\services\BaseService;
 use app\common\services\DataHelper;
 use app\common\services\UrlService;
+use app\models\book\Baoche;
 use app\models\book\Book;
 use app\models\member\Member;
 use app\models\member\OauthMemberBind;
@@ -59,7 +60,7 @@ class TemplateService extends  BaseService
                 "color" => "#173177"
             ],
             "serviceName" =>[
-                "value" => $pay_order_item_info['quantity']."人。".$book_info['name'],
+                "value" => $book_info['name']."。共计".$pay_order_item_info['quantity']."人。",
                 "color" => "#173177"
             ],
             "time" =>[
@@ -67,14 +68,14 @@ class TemplateService extends  BaseService
                 "color" => "#173177"
             ],
             "remark" => [
-                "value" => "如有疑问，欢迎拨打87883369。请核对您的电话：".$member_info['mobile']."。我们将尽快安排专员与您联系",
+                "value" => "如有疑问，87878758或15698019026。请核对您的电话：".$member_info['mobile']."。我们将尽快安排专员与您联系",
                 "color" => "#173177"
             ]
         ];
 
         return self::send($open_id,$template_id,UrlService::buildMUrl( "/user/order" ),$data);
     }
-//向管理员发送消息
+
     public static function payNoticeMaster( $pay_order_id ){
 
         $pay_order_info =PayOrder::findOne( $pay_order_id );
@@ -88,13 +89,12 @@ class TemplateService extends  BaseService
         $config = \Yii::$app->params['weixin'];
         RequestService::setConfig( $config['appid'],$config['token'],$config['sk'] );
 
-        $open_id = 'oeaD8558td1ycsI5MUx9NmTsNQNA';
+        $open_id = 'oeaD856j_Nt-gzR5D6Ry1yWgVJ6Y';
         if(!$open_id){
             return false;
         }
 
         $template_id = "bZ2eW05hftOxirpNqBa4xMpLV5rvOEgjppvc1sjsjL4";
-        $pay_money = $pay_order_info["pay_price"];
 
         $data = [
             "first" => [
@@ -118,7 +118,109 @@ class TemplateService extends  BaseService
                 "color" => "#173177"
             ],
             "remark" => [
-                "value" => "请尽快与出行人联系。",
+                "value" => "请尽快与出行人联系。"."联系电话为：".$member_info['mobile'],
+                "color" => "#173177"
+            ]
+        ];
+
+        return self::send($open_id,$template_id,UrlService::buildMUrl( "/user/order" ),$data);
+    }
+//向管理员发送消息
+    public static function payNoticeMasterWu( $pay_order_id ){
+
+        $pay_order_info =PayOrder::findOne( $pay_order_id );
+        $member_info = Member::findOne($pay_order_info['member_id']);
+        $pay_order_item_info=PayOrderItem::findOne($pay_order_info['id']);
+        $book_info = Book::findOne($pay_order_item_info['target_id']);
+        if( !$pay_order_info ){
+            return false;
+        }
+
+        $config = \Yii::$app->params['weixin'];
+        RequestService::setConfig( $config['appid'],$config['token'],$config['sk'] );
+
+        $open_id = 'oeaD85wGc6jW6cGtQqzesYOcaYD4';
+        if(!$open_id){
+            return false;
+        }
+
+        $template_id = "bZ2eW05hftOxirpNqBa4xMpLV5rvOEgjppvc1sjsjL4";
+
+        $data = [
+            "first" => [
+                "value" => "有客户下单",
+                "color" => "#173177"
+            ],
+            "keyword1" =>[
+                "value" => $member_info['nickname'].$member_info['mobile'],
+                "color" => "#173177"
+            ],
+            "keyword2" =>[
+                "value" => $book_info['name'],
+                "color" => "#173177"
+            ],
+            "keyword3" =>[
+                "value" => $pay_order_item_info['quantity'],
+                "color" => "#173177"
+            ],
+            "keyword4" =>[
+                "value" => $pay_order_info['chuxingtime'],
+                "color" => "#173177"
+            ],
+            "remark" => [
+                "value" => "请尽快与出行人联系。"."联系电话为：".$member_info['mobile'],
+                "color" => "#173177"
+            ]
+        ];
+
+        return self::send($open_id,$template_id,UrlService::buildMUrl( "/user/order" ),$data);
+    }
+//包车成功消息提醒
+    public static function baocheNotice( $baoche_id ){
+
+        $baoche_info = Baoche::findOne($baoche_id);
+        if( !$baoche_info ){
+            return false;
+        }
+
+        $config = \Yii::$app->params['weixin'];
+        RequestService::setConfig( $config['appid'],$config['token'],$config['sk'] );
+
+        $open_id = self::getOpenId( $baoche_info['member_id'] );
+        if(!$open_id){
+            return false;
+        }
+
+        $template_id = "unV0vSiQ95_QNMQFmeVG8YGh3mdhYJ6nuXy8FBnLczI";
+
+
+        $data = [
+            "first" => [
+                "value" => "您好",
+                "color" => "#173177"
+            ],
+            "keyword1" =>[
+                "value" => "团体包车业务",
+                "color" => "#173177"
+            ],
+            "keyword2" =>[
+                "value" => $baoche_info['chuxingtime'],
+                "color" => "#173177"
+            ],
+            "keyword3" =>[
+                "value" => "成人:".$baoche_info['chengren']."儿童:".$baoche_info['ertong'],
+                "color" => "#173177"
+            ],
+            "keyword4" =>[
+                "value" => $baoche_info['fromaddress'],
+                "color" => "#173177"
+            ],
+            "keyword5" =>[
+                "value" => $baoche_info['toaddress'],
+                "color" => "#173177"
+            ],
+            "remark" => [
+                "value" => "请核对您的信息，如有错误请与87883369联系。",
                 "color" => "#173177"
             ]
         ];
@@ -126,6 +228,58 @@ class TemplateService extends  BaseService
         return self::send($open_id,$template_id,UrlService::buildMUrl( "/user/order" ),$data);
     }
 
+    //包车成功向管理员消息提醒
+    public static function baocheNoticeMaster( $baoche_id ){
+
+        $baoche_info = Baoche::findOne($baoche_id);
+        if( !$baoche_info ){
+            return false;
+        }
+
+        $config = \Yii::$app->params['weixin'];
+        RequestService::setConfig( $config['appid'],$config['token'],$config['sk'] );
+
+        $open_id = 'oeaD8558td1ycsI5MUx9NmTsNQNA';
+        if(!$open_id){
+            return false;
+        }
+
+        $template_id = "unV0vSiQ95_QNMQFmeVG8YGh3mdhYJ6nuXy8FBnLczI";
+
+
+        $data = [
+            "first" => [
+                "value" => $baoche_info['nickname']."包车",
+                "color" => "#173177"
+            ],
+            "keyword1" =>[
+                "value" => "团体包车业务",
+                "color" => "#173177"
+            ],
+            "keyword2" =>[
+                "value" => $baoche_info['chuxingtime'],
+                "color" => "#173177"
+            ],
+            "keyword3" =>[
+                "value" => "成人:".$baoche_info['chengren']."儿童:".$baoche_info['ertong'],
+                "color" => "#173177"
+            ],
+            "keyword4" =>[
+                "value" => $baoche_info['fromaddress'],
+                "color" => "#173177"
+            ],
+            "keyword5" =>[
+                "value" => $baoche_info['toaddress'],
+                "color" => "#173177"
+            ],
+            "remark" => [
+                "value" => "有人包车，联系电话：".$baoche_info['mobile'],
+                "color" => "#173177"
+            ]
+        ];
+
+        return self::send($open_id,$template_id,UrlService::buildMUrl( "/user/order" ),$data);
+    }
 	/**
 	 * 发货通知提醒
 	 */
