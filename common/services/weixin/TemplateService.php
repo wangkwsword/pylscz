@@ -41,7 +41,12 @@ class TemplateService extends  BaseService
 //        改为预订
         $template_id = "6WSfn7GE9HxaauQcJDlB-0GSwQcX3CLBzEE_9vEfzec";
         $pay_money = $pay_order_info["pay_price"];
-
+        $xiangqing_info = "";
+        if($pay_order_item_info['quantity']>9){
+            $xiangqing_info="如有疑问，请拨打87872024或13964029277。请核对您的电话：".$member_info['mobile']."。我们将尽快安排专员与您联系";
+        }else{
+            $xiangqing_info="如有疑问，请拨打87878758或15698019026。请核对您的电话：".$member_info['mobile']."。我们将尽快安排专员与您联系";
+        }
         $data = [
             "first" => [
                 "value" => $member_info['nickname']."您已成功预订出行服务",
@@ -68,7 +73,7 @@ class TemplateService extends  BaseService
                 "color" => "#173177"
             ],
             "remark" => [
-                "value" => "如有疑问，87878758或15698019026。请核对您的电话：".$member_info['mobile']."。我们将尽快安排专员与您联系",
+                "value" => $xiangqing_info,
                 "color" => "#173177"
             ]
         ];
@@ -90,7 +95,7 @@ class TemplateService extends  BaseService
         RequestService::setConfig( $config['appid'],$config['token'],$config['sk'] );
 
         $open_id = 'oeaD856j_Nt-gzR5D6Ry1yWgVJ6Y';
-        if(!$open_id){
+        if(!$open_id||$pay_order_item_info['quantity']>9){
             return false;
         }
 
@@ -138,8 +143,13 @@ class TemplateService extends  BaseService
 
         $config = \Yii::$app->params['weixin'];
         RequestService::setConfig( $config['appid'],$config['token'],$config['sk'] );
+        $open_id='';
+        if($pay_order_item_info['quantity']>9){
+            $open_id = 'oeaD8511utUZGqK140Mc3Kalj2rQ';
+        }else{
 
-        $open_id = 'oeaD85wGc6jW6cGtQqzesYOcaYD4';
+            $open_id = 'oeaD85wGc6jW6cGtQqzesYOcaYD4';
+        }
         if(!$open_id){
             return false;
         }
